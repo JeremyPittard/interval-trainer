@@ -21,9 +21,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'AFL Interval Trainer',
-        short_name: 'AFL Trainer',
-        description: 'Random interval training simulator for AFL football',
+        name: 'ntrvl',
+        short_name: 'ntrvl',
+        description: 'Random interval training simulator for sport',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
