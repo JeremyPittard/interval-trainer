@@ -8,21 +8,28 @@ export default defineConfig({
     tailwindcss(),
     sveltekit(),
     SvelteKitPWA({
+      outDir: '.svelte-kit/output/client',
+      mode: 'production',
+      strategies: 'generateSW',
       registerType: 'autoUpdate',
+      filename: 'sw.js',
+      scope: '/',
+      base: '/',
+      includeAssets: [
+        'favicon.png',
+        'web-app-manifest-192x192.png',
+        'web-app-manifest-512x512.png',
+      ],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        // Cache everything for full offline support
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: { cacheName: 'google-fonts-cache' },
-          },
-        ],
+        globDirectory: '.svelte-kit/output/client',
+        globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,webp,ico,json}'],
+        globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
       },
       manifest: {
-        name: 'ntrvl',
-        short_name: 'ntrvl',
+        name: 'pepper',
+        short_name: 'pepper',
         description: 'Random interval training simulator for sport',
         theme_color: '#0f172a',
         background_color: '#0f172a',
@@ -32,13 +39,13 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: 'icon-192.png',
+            src: 'web-app-manifest-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable',
           },
           {
-            src: 'icon-512.png',
+            src: 'web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',

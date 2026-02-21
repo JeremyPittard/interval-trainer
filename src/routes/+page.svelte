@@ -5,6 +5,7 @@
   import { estimateIntervalCount, validateConfig } from '$lib/intervalGenerator';
   import { formatDurationLong } from '$lib/formatTime';
   import { timerStore } from '$lib/timerStore.svelte';
+  import type { BeforeInstallPromptEvent } from '$lib/types';
 
   // Local reactive copies of the config values for the sliders
   let sessionMinutes = $state(Math.floor(configStore.config.sessionDuration / 60));
@@ -31,11 +32,48 @@
     timerStore.start(configStore.config);
     goto('/session');
   }
+
+  // PWA install prompt
+  let installPromptEvent: BeforeInstallPromptEvent | null = $state(null);
+  let showInstallBanner = $state(false);
+
+  $effect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      installPromptEvent = e as BeforeInstallPromptEvent;
+      showInstallBanner = true;
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  });
+
+  async function handleInstall() {
+    if (!installPromptEvent) return;
+    await installPromptEvent.prompt();
+    const result = await installPromptEvent.userChoice;
+    if (result.outcome === 'accepted') {
+      showInstallBanner = false;
+    }
+    installPromptEvent = null;
+  }
 </script>
 
 <div class="container mx-auto max-w-lg px-4 py-12">
   <header class="mb-10 text-center">
-    <h1 class="mb-2 h1">AFL Interval Trainer</h1>
+    {#if showInstallBanner}
+      <div class="preset-filled-primary-900 mb-6 flex items-center justify-between card p-4">
+        <p class="text-sm">Add to your home screen for the best experience.</p>
+        <div class="flex gap-2">
+          <button class="btn preset-filled-primary-500 btn-sm" onclick={handleInstall}
+            >Install</button
+          >
+          <button class="preset-ghost btn btn-sm" onclick={() => (showInstallBanner = false)}
+            >✕</button
+          >
+        </div>
+      </div>
+    {/if}
+    <h1 class="mb-2 h1">Pepper.</h1>
     <p class="text-surface-400">Configure your session then hit Start.</p>
   </header>
 

@@ -38,7 +38,9 @@
   }
 
   onMount(() => {
-    acquireWakeLock();
+    if (document.visibilityState === 'visible') {
+      acquireWakeLock();
+    }
     document.addEventListener('visibilitychange', handleVisibilityChange);
   });
 

@@ -34,3 +34,8 @@ export type WorkerInMessage =
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'stop' };
+
+export interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
